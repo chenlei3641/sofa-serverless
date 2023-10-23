@@ -48,7 +48,8 @@ const (
 	ModuleDeploymentReleaseProgressPaused                 ReleaseProgress = "Paused"
 	ModuleDeploymentReleaseProgressCompleted              ReleaseProgress = "Completed"
 	ModuleDeploymentReleaseProgressAborted                ReleaseProgress = "Aborted"
-	ModuleDeploymentReleaseProgressTermed                 ReleaseProgress = "Terminated"
+	ModuleDeploymentReleaseProgressTerminating            ReleaseProgress = "Terminating"
+	ModuleDeploymentReleaseProgressTerminated             ReleaseProgress = "Terminated"
 )
 
 type ModuleUpgradeType string
@@ -117,7 +118,7 @@ type ModuleOperationStrategy struct {
 
 	BatchCount int32 `json:"batchCount,omitempty"`
 
-	MaxUnavailable *intstr.IntOrString `json:"maxUnavailable,omitempty"`
+	MaxUnavailable int32 `json:"maxUnavailable,omitempty"`
 
 	GrayTimeBetweenBatchSeconds int32 `json:"grayTimeBetweenBatchSeconds,omitempty"`
 
@@ -192,6 +193,8 @@ type ModuleDeploymentStatus struct {
 	Conditions []ModuleDeploymentCondition `json:"conditions,omitempty"`
 
 	ReleaseStatus *ReleaseStatus `json:"releaseStatus,omitempty"`
+
+	DoTerminating bool `json:"doTerminating,omitempty"`
 
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 }
