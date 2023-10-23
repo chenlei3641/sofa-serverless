@@ -19,7 +19,7 @@ import (
 	"github.com/sofastack/sofa-serverless/internal/utils"
 )
 
-var _ = Describe("ModuleDeployment Controller", func() {
+var _ = FDescribe("ModuleDeployment Controller", func() {
 	const timeout = time.Second * 30
 	const interval = time.Second * 5
 
@@ -268,7 +268,25 @@ var _ = Describe("ModuleDeployment Controller", func() {
 			}, timeout, interval).Should(BeTrue())
 		})
 
-		It("9. clean module-deployment", func() {
+		It("9. check if the moduleDeployment status is completed", func() {
+			Eventually(func() error {
+				if err := k8sClient.Get(context.TODO(), nn, &moduleDeployment); err != nil {
+					return err
+				}
+
+				if moduleDeployment.Spec.Pause != false {
+					return fmt.Errorf("the module-deployment is paused")
+				}
+
+				if moduleDeployment.Status.ReleaseStatus.Progress != v1alpha1.ModuleDeploymentReleaseProgressTerminated {
+					return fmt.Errorf("expect status %v, but got %v",
+						v1alpha1.ModuleDeploymentReleaseProgressTerminated, moduleDeployment.Status.ReleaseStatus.Progress)
+				}
+				return nil
+			}, timeout, interval).Should(BeTrue())
+		})
+
+		It("10. clean module-deployment", func() {
 			utils.RemoveFinalizer(&moduleDeployment.ObjectMeta, "test")
 			Expect(k8sClient.Update(context.TODO(), &moduleDeployment))
 		})

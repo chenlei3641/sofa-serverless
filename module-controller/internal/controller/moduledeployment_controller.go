@@ -128,9 +128,7 @@ func (r *ModuleDeploymentReconciler) Reconcile(ctx context.Context, req ctrl.Req
 	switch releaseStatus.Progress {
 	case v1alpha1.ModuleDeploymentReleaseProgressInit:
 		handleInitModuleDeployment(moduleDeployment, newRS)
-		if err := r.Status().Update(ctx, moduleDeployment); err != nil {
-			return ctrl.Result{}, err
-		}
+		return ctrl.Result{}, r.Status().Update(ctx, moduleDeployment)
 	case v1alpha1.ModuleDeploymentReleaseProgressExecuting:
 		return r.updateModuleReplicaSet(ctx, moduleDeployment, newRS)
 	case v1alpha1.ModuleDeploymentReleaseProgressCompleted:
